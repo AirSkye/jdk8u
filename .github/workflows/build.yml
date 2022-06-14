@@ -1,0 +1,15 @@
+name: Build JDK 8
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 1 * *'
+
+jobs:
+  build:
+    uses: jorgectf/jdk4ql/.github/workflows/code-scanning.yml@main
+    with:
+      VERSION: 8
+      REPOSITORY: 'openjdk/jdk8u'
+      TAG: 'latest'
+      CONFIGURE_OPTS: '--with-extra-cflags=-Wno-error --with-extra-cxxflags=-Wno-error --with-freetype-include=/usr/include/freetype2 --with-freetype-lib=/usr/lib/x86_64-linux-gnu --with-boot-jdk=$JAVA_HOME_NOW'
