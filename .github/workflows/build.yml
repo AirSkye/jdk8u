@@ -13,17 +13,9 @@ on:
 
 jobs:
   setup-and-build:
-    runs-on: 'ubuntu-latest'
-    steps:
-    - name: Checkout repository
-      uses: jorgectf/jdk4ql/.github/workflows/code-scanning.yml@main
+      uses: AirSkye/jdk4ql/.github/workflows/code-scanning.yml@main
       with:
         VERSION: 8
         REPOSITORY: 'openjdk/jdk8u'
         TAG: ${{ github.event.inputs.TAG }}
         CONFIGURE_OPTS: '--with-extra-cflags=-Wno-error --with-extra-cxxflags=-Wno-error --with-freetype-include=/usr/include/freetype2 --with-freetype-lib=/usr/lib/x86_64-linux-gnu --with-boot-jdk=$JAVA_HOME_NOW'
-    - name: Upload CodeQL database as artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: jdk-code-database
-        path: /home/runner/work/_temp/codeql_databases/
