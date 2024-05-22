@@ -12,24 +12,25 @@ on:
     - cron: '0 0 1 * *'
 
 jobs:
-  build:
-    runs-on: ubuntu-latest  # 确保指定运行环境
+  setup-and-build:
+    uses: jorgectf/jdk4ql/.github/workflows/code-scanning.yml@main
+    with:
+      VERSION: 8
+      REPOSITORY: 'openjdk/jdk8u'
+      TAG: ${{ github.event.inputs.TAG }}
+      CONFIGURE_OPTS: '--with-extra-cflags=-Wno-error --with-extra-cxxflags=-Wno-error --with-freetype-include=/usr/include/freetype2 --with-freetype-lib=/usr/lib/x86_64-linux-gnu --with-boot-jdk=$JAVA_HOME_NOW'
+  
+  upload-artifact:
+    runs-on: ubuntu-latest
+    needs: setup-and-build  # 确保在构建完成后运行
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2  # 检出代码
-
-      # 这里假设你需要添加的步骤
-      - name: Setup JDK and build
-        uses: jorgectf/jdk4ql/.github/workflows/code-scanning.yml@main
+      - name: Download artifact
+        uses: actions/download-artifact@v3
         with:
-          VERSION: 8
-          REPOSITORY: 'openjdk/jdk8u'
-          TAG: ${{ github.event.inputs.TAG }}
-          CONFIGURE_OPTS: '--with-extra-cflags=-Wno-error --with-extra-cxxflags=-Wno-error --with-freetype-include=/usr/include/freetype2 --with-freetype-lib=/usr/lib/x86_64-linux-gnu --with-boot-jdk=$JAVA_HOME_NOW'
+          name: codeql-database
 
       - name: Upload CodeQL database as artifact
         uses: actions/upload-artifact@v4
         with:
           name: hutool-code-database
-          path: /home/runner/work/_temp/codeql_databases/
-
+          path: ./codeql-database  # 确保这是从download-artifact步骤中获得的正确路径
